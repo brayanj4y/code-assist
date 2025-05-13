@@ -34,7 +34,7 @@ export function ChatAssistant({ htmlCode, cssCode, jsCode, onCodeUpdate, onClose
       id: "welcome",
       role: "assistant",
       content:
-        "Hi! I'm your Gemini-powered coding assistant. I can help you write, debug, and improve your code. What would you like to do?",
+        "Hi! I'm Jay your Gemini-powered coding assistant. I can help you write, debug, and improve your code. What would you like to do?",
     },
   ])
   const [inputValue, setInputValue] = useState("")

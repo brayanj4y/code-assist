@@ -5,52 +5,82 @@ export const defaultCode = {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Web Page</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div class="container">
     <h1>Welcome to CodeAssist</h1>
-    <p>This is a simple web page. Edit the HTML, CSS, and JavaScript to create your own project!</p>
-    <button id="changeColorBtn">Change Color</button>
+    <p>This is a simple web page.  Edit the HTML, CSS, and JavaScript to create your own project!</p>
+    <button id="changeColorBtn">Change Color</button> <p>Star the creator on GitHub: <a href="https://github.com/brayanj4y" target="_blank">@brayanj4y</a></p>
   </div>
+  <script src="script.js"></script>
 </body>
 </html>`,
 
   css: `body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  line-height: 1.6;
+  font-family: sans-serif;
   margin: 0;
   padding: 20px;
-  background-color: #f8f9fa;
-  color: #333;
+  background-color: #f4f4f4; /* Light gray background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; /* Ensure content is centered vertically */
 }
 
 .container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
   background-color: white;
+  padding: 30px;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-align: center; /* Center text within the container */
 }
 
 h1 {
-  color: #2563eb;
-  margin-top: 0;
+  color: #333; /* Dark gray heading */
+  margin-bottom: 15px;
 }
 
-button {
-  background-color: #2563eb;
+p {
+  line-height: 1.6;
+  margin-bottom: 10px;
+  color: #555; /* Slightly lighter gray for paragraphs */
+}
+
+#changeColorBtn {
+  background-color: #4CAF50; /* Green button */
   color: white;
   border: none;
-  padding: 10px 15px;
-  border-radius: 4px;
+  padding: 10px 20px;
+  border-radius: 5px;
   cursor: pointer;
   font-size: 16px;
   transition: background-color 0.3s;
+  margin: 10px 0; /* Added margin for spacing */
 }
 
-button:hover {
-  background-color: #1d4ed8;
+#changeColorBtn:hover {
+  background-color: #45a049; /* Darker green on hover */
+}
+
+a {
+  color: #007bff; /* Blue link color */
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .container {
+    padding: 20px;
+  }
+  h1 {
+    font-size: 1.8em;
+  }
 }`,
 
   js: `// Wait for the DOM to be fully loaded
@@ -80,4 +110,4 @@ document.addEventListener('DOMContentLoaded', function() {
     return color;
   }
 });`,
-}
+};
