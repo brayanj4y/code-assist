@@ -73,7 +73,7 @@ export function CodeEditor({ language, value, onChange }: CodeEditorProps) {
           renderLineHighlight: "all",
           renderWhitespace: "none",
           renderControlCharacters: false,
-          renderIndentGuides: true,
+          guides: { indentation: true },
           cursorBlinking: "smooth",
           cursorSmoothCaretAnimation: "on",
           smoothScrolling: true,
@@ -124,7 +124,8 @@ export function CodeEditor({ language, value, onChange }: CodeEditorProps) {
       // Preserve cursor position and selection when updating value
       const position = editorRef.current.getPosition()
       const selection = editorRef.current.getSelection()
-      const scrollPosition = editorRef.current.getScrollPosition()
+      const scrollTop = editorRef.current.getScrollTop()
+      const scrollLeft = editorRef.current.getScrollLeft()
 
       editorRef.current.setValue(value)
 
@@ -135,9 +136,10 @@ export function CodeEditor({ language, value, onChange }: CodeEditorProps) {
       if (selection) {
         editorRef.current.setSelection(selection)
       }
-      if (scrollPosition) {
-        editorRef.current.setScrollPosition(scrollPosition)
-      }
+
+      // Restore scroll position
+      editorRef.current.setScrollTop(scrollTop)
+      editorRef.current.setScrollLeft(scrollLeft)
     }
   }, [value, isEditorReady])
 
