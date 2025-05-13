@@ -8,9 +8,10 @@ export const defaultCode = {
 </head>
 <body>
   <div class="container">
+    <img src="https://i.imgur.com/Gqy2x5O.png" alt="CodeAssist Mascot" class="header-img" />
     <h1>🚧 Welcome To CodeAssist</h1>
     <p>This is your playground. Edit the HTML, CSS, and JS to build bold things!</p>
-    <button id="changeColorBtn">Toggle Shadow</button>
+    <button id="changeColorBtn">Change Theme</button>
 
     <div class="social-media">
       <h3>🔗 Connect with the Creator</h3>
@@ -37,6 +38,14 @@ export const defaultCode = {
   background-color: #ffeb00;
   border: 5px solid black;
   box-shadow: 8px 8px 0 black;
+  text-align: center;
+}
+
+.header-img {
+  width: 120px;
+  margin-bottom: 20px;
+  border: 3px solid black;
+  box-shadow: 5px 5px 0 black;
 }
 
 h1 {
@@ -48,7 +57,7 @@ h1 {
   margin: 0 0 10px 0;
   text-transform: uppercase;
   box-shadow: 6px 6px 0 #000;
-  transition: box-shadow 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 p {
@@ -68,13 +77,13 @@ button {
   margin-top: 10px;
   box-shadow: 4px 4px 0 black;
   text-transform: uppercase;
-  transition: box-shadow 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 button:hover {
-  background-color: #ffeb00;
-  color: black;
-  box-shadow: none;
+  background-color: #ff0066;
+  color: white;
+  box-shadow: 2px 2px 0 black;
 }
 
 .social-media {
@@ -98,26 +107,36 @@ button:hover {
   background: white;
   padding: 4px 8px;
   border: 2px solid black;
+  text-decoration: none;
+  box-shadow: 4px 4px 0 black; 
+  transition: all 0.2s ease-in-out;
 }
 
 .social-media a:hover {
   background: black;
   color: #ffeb00;
-  transition: all 0.2s ease-in-out;
-}
-
-.no-shadow {
-  box-shadow: none !important;
 }`,
 
   js: `document.addEventListener('DOMContentLoaded', function() {
   const changeColorBtn = document.getElementById('changeColorBtn');
-  const header = document.querySelector('h1');
+  const container = document.querySelector('.container');
+  const h1 = document.querySelector('h1');
 
-  changeColorBtn.addEventListener('click', function() {
-    // Toggle shadows on header and button
-    header.classList.toggle('no-shadow');
-    this.classList.toggle('no-shadow');
+  const colors = [
+    { bg: '#ffeb00', text: '#000' },
+    { bg: '#ff0066', text: '#fff' },
+    { bg: '#00ffff', text: '#000' },
+    { bg: '#222222', text: '#ffeb00' },
+    { bg: '#ffffff', text: '#000' }
+  ];
+
+  let index = 0;
+
+  changeColorBtn.addEventListener('click', () => {
+    index = (index + 1) % colors.length;
+    container.style.backgroundColor = colors[index].bg;
+    h1.style.backgroundColor = colors[index].text;
+    h1.style.color = colors[index].bg;
   });
 });`,
 };

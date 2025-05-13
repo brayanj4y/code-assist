@@ -9,7 +9,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head />
+      <head>
+        <link rel="icon" href="/favicon.png" type="image/x-icon" />
+      </head>
       <body className="light">
         {children}
         <Toaster />
@@ -20,4 +22,4 @@ export default function RootLayout({
 
 export const metadata = {
   title: "CodeAssist",
-};
+}
