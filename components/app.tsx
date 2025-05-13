@@ -1,23 +1,32 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useEffect } from "react"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import { useToast } from "@/hooks/use-toast"
 import { useProjectStorage } from "@/hooks/use-project-storage"
 import { useFileOperations } from "@/hooks/use-file-operations"
-
 import { Header } from "@/components/layout/header"
 import { MobileTabs } from "@/components/layout/mobile-tabs"
 import { FileExplorer } from "@/components/editor/file-explorer"
-import { CodeEditor } from "@/components/editor/code-editor"
 import { Preview } from "@/components/editor/preview"
 import { ChatAssistant } from "@/components/chat/chat-assistant"
 import { SaveProjectDialog } from "@/components/project/save-project-dialog"
 import { ProjectListDialog } from "@/components/project/project-list-dialog"
+import { Loader2 } from "lucide-react"
+import dynamic from "next/dynamic"
 
-export function App() {
+// Dynamically import the CodeEditor component with SSR disabled
+const CodeEditor = dynamic(() => import("@/components/editor/code-editor"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-full w-full flex items-center justify-center">
+      <Loader2 className="h-5 w-5 animate-spin text-blue-600" />
+    </div>
+  ),
+})
+
+function App() {
   const {
     projectName,
     setProjectName,
@@ -57,11 +66,19 @@ export function App() {
   const [showProjectList, setShowProjectList] = useState(false)
   const isMobile = useMediaQuery("(max-width: 640px)")
   const [editorKey, setEditorKey] = useState(0) // Key to force editor remount when needed
+  const [isClient, setIsClient] = useState(false)
+
+  // Set isClient to true once the component mounts
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   // Force editor remount when switching files
   useEffect(() => {
-    setEditorKey((prev) => prev + 1)
-  }, [activeFile])
+    if (isClient) {
+      setEditorKey((prev) => prev + 1)
+    }
+  }, [activeFile, isClient])
 
   // Run code and update preview
   const runCode = () => {
@@ -137,7 +154,13 @@ export function App() {
     }
   }
 
-  if (!mounted) return null
+  if (!mounted || !isClient) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col h-screen bg-white overflow-hidden">
@@ -271,3 +294,6 @@ export function App() {
     </div>
   )
 }
+
+// Export as default
+export default App

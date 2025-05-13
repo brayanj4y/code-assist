@@ -16,45 +16,38 @@ export function useProjectStorage() {
   const { toast } = useToast()
   const [mounted, setMounted] = useState(false)
   const [projectName, setProjectName] = useState("Untitled Project")
-  const [htmlCode, setHtmlCode] = useState("")
-  const [cssCode, setCssCode] = useState("")
-  const [jsCode, setJsCode] = useState("")
+  const [htmlCode, setHtmlCode] = useState(defaultCode.html)
+  const [cssCode, setCssCode] = useState(defaultCode.css)
+  const [jsCode, setJsCode] = useState(defaultCode.js)
   const [savedProjects, setSavedProjects] = useState<Project[]>([])
   const [activeFile, setActiveFile] = useState("html")
 
   // Load saved code from localStorage on initial render
   useEffect(() => {
     setMounted(true)
-    const savedProject = localStorage.getItem("currentProject")
 
-    if (savedProject) {
-      try {
+    try {
+      const savedProject = localStorage.getItem("currentProject")
+      if (savedProject) {
         const { name, html, css, js } = JSON.parse(savedProject)
         setProjectName(name)
         setHtmlCode(html)
         setCssCode(css)
         setJsCode(js)
-      } catch (error) {
-        console.error("Error loading saved project:", error)
-        resetToDefault()
       }
-    } else {
-      resetToDefault()
-    }
 
-    // Load saved projects list
-    try {
+      // Load saved projects list
       const projects = JSON.parse(localStorage.getItem("savedProjects") || "[]")
       setSavedProjects(projects)
-    } catch (error) {
-      console.error("Error loading saved projects:", error)
-      setSavedProjects([])
-    }
 
-    // Load last active file
-    const lastFile = localStorage.getItem("lastActiveFile")
-    if (lastFile) {
-      setActiveFile(lastFile)
+      // Load last active file
+      const lastFile = localStorage.getItem("lastActiveFile")
+      if (lastFile) {
+        setActiveFile(lastFile)
+      }
+    } catch (error) {
+      console.error("Error loading saved project:", error)
+      // No need to reset to default since we already initialized with default values
     }
   }, [])
 
@@ -69,21 +62,29 @@ export function useProjectStorage() {
   // Save current code to localStorage
   useEffect(() => {
     if (mounted && htmlCode && cssCode && jsCode) {
-      const currentProject = {
-        name: projectName,
-        html: htmlCode,
-        css: cssCode,
-        js: jsCode,
-        lastModified: new Date().toISOString(),
+      try {
+        const currentProject = {
+          name: projectName,
+          html: htmlCode,
+          css: cssCode,
+          js: jsCode,
+          lastModified: new Date().toISOString(),
+        }
+        localStorage.setItem("currentProject", JSON.stringify(currentProject))
+      } catch (error) {
+        console.error("Error saving to localStorage:", error)
       }
-      localStorage.setItem("currentProject", JSON.stringify(currentProject))
     }
   }, [htmlCode, cssCode, jsCode, projectName, mounted])
 
   // Save last active file
   useEffect(() => {
     if (mounted) {
-      localStorage.setItem("lastActiveFile", activeFile)
+      try {
+        localStorage.setItem("lastActiveFile", activeFile)
+      } catch (error) {
+        console.error("Error saving active file:", error)
+      }
     }
   }, [activeFile, mounted])
 
@@ -104,7 +105,7 @@ export function useProjectStorage() {
         description: "Please enter a valid project name.",
         variant: "destructive",
       })
-      return
+      return false
     }
 
     try {

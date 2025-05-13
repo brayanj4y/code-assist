@@ -1,11 +1,8 @@
 "use client"
 
 import type React from "react"
-
 import { useRef } from "react"
 import { useToast } from "@/hooks/use-toast"
-import JSZip from "jszip"
-import FileSaver from "file-saver"
 
 interface FileOperationsProps {
   projectName: string
@@ -104,6 +101,10 @@ export function useFileOperations({
   // Download project as ZIP
   const downloadProject = async () => {
     try {
+      // Dynamically import JSZip and FileSaver only on the client side
+      const JSZip = (await import("jszip")).default
+      const FileSaver = await import("file-saver")
+
       const zip = new JSZip()
 
       // Add files to the zip
@@ -124,14 +125,15 @@ export function useFileOperations({
       // Generate the zip file
       const content = await zip.generateAsync({ type: "blob" })
 
-      // Save the zip file
-      FileSaver.saveAs(content, `${projectName.replace(/\s+/g, "-").toLowerCase()}.zip`)
+      // Save the zip file using the correct FileSaver method
+      FileSaver.default.saveAs(content, `${projectName.replace(/\s+/g, "-").toLowerCase()}.zip`)
 
       toast({
         title: "Project downloaded",
         description: "Your project has been downloaded as a ZIP file.",
       })
     } catch (error) {
+      console.error("Error downloading project:", error)
       toast({
         title: "Error downloading project",
         description: "There was an error creating the ZIP file.",

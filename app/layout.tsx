@@ -18,4 +18,6 @@ export default function RootLayout({
   )
 }
 
-export const metadata = {};
+export const metadata = {
+  title: "CodeAssist",
+};

@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import * as monaco from "monaco-editor"
 import { Loader2 } from "lucide-react"
 
 interface CodeEditorProps {
@@ -10,33 +9,31 @@ interface CodeEditorProps {
   onChange: (value: string) => void
 }
 
-export function CodeEditor({ language, value, onChange }: CodeEditorProps) {
+export default function CodeEditor({ language, value, onChange }: CodeEditorProps) {
   const containerRef = useRef<HTMLDivElement>(null)
-  const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null)
+  const editorRef = useRef<any>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isEditorReady, setIsEditorReady] = useState(false)
+  const [monaco, setMonaco] = useState<any>(null)
 
-  // Initialize editor
+  // Initialize Monaco editor
   useEffect(() => {
-    // Cleanup function to dispose editor
-    const disposeEditor = () => {
-      if (editorRef.current) {
-        editorRef.current.dispose()
-        editorRef.current = null
-      }
-    }
+    let isMounted = true
 
-    // Only initialize if container exists and editor doesn't
-    if (!containerRef.current || editorRef.current) return
-
-    setIsLoading(true)
-    setIsEditorReady(false)
-
-    // Create editor with a slight delay to ensure the container is properly sized
-    const initTimeout = setTimeout(() => {
-      if (!containerRef.current) return
-
+    async function loadMonaco() {
       try {
+        // Dynamically import monaco-editor
+        const monaco = await import("monaco-editor")
+        if (!isMounted) return
+
+        setMonaco(monaco)
+
+        // Only initialize if container exists and editor doesn't
+        if (!containerRef.current || editorRef.current) return
+
+        setIsLoading(true)
+        setIsEditorReady(false)
+
         // Initialize Monaco Editor with optimized settings
         editorRef.current = monaco.editor.create(containerRef.current, {
           value,
@@ -73,7 +70,7 @@ export function CodeEditor({ language, value, onChange }: CodeEditorProps) {
           renderLineHighlight: "all",
           renderWhitespace: "none",
           renderControlCharacters: false,
-          guides: { indentation: true },
+          renderIndentGuides: true,
           cursorBlinking: "smooth",
           cursorSmoothCaretAnimation: "on",
           smoothScrolling: true,
@@ -107,12 +104,17 @@ export function CodeEditor({ language, value, onChange }: CodeEditorProps) {
         console.error("Error initializing editor:", error)
         setIsLoading(false)
       }
-    }, 200) // Slightly longer delay to ensure container is ready
+    }
 
-    // Clean up on unmount or when language changes
+    loadMonaco()
+
     return () => {
-      clearTimeout(initTimeout)
-      disposeEditor()
+      isMounted = false
+      // Cleanup function to dispose editor
+      if (editorRef.current) {
+        editorRef.current.dispose()
+        editorRef.current = null
+      }
     }
   }, [language]) // Recreate editor when language changes
 
@@ -120,7 +122,8 @@ export function CodeEditor({ language, value, onChange }: CodeEditorProps) {
   useEffect(() => {
     if (!editorRef.current || !isEditorReady) return
 
-    if (value !== editorRef.current.getValue()) {
+    const currentValue = editorRef.current.getValue()
+    if (value !== currentValue) {
       // Preserve cursor position and selection when updating value
       const position = editorRef.current.getPosition()
       const selection = editorRef.current.getSelection()
